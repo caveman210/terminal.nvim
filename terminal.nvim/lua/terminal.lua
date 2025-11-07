@@ -1,5 +1,4 @@
 local M = {}
-
 M.get_window_config = function()
   local editor_height = vim.api.nvim_get_option_value('lines', {})
   local editor_width = vim.api.nvim_get_option_value('columns', {})
@@ -20,34 +19,29 @@ M.get_window_config = function()
 end
 
 M.create_term = function()
-  local bufnr = vim.fn.termopen(vim.o.shell)
-
+  local win_config = M.get_window_config()
+  local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(bufnr, 'bufhidden', 'wipe')
-
+  local win_id = vim.api.nvim_open_win(bufnr, true, win_config)
+  vim.api.nvim_win_set_option(win_id, 'number', false)
+  vim.api.nvim_win_set_option(win_id, 'relativenumber', false)
+  vim.api.nvim_win_set_option(win_id, 'cursorline', false)
+  vim.cmd 'terminal'
+  local term_bufnr = vim.api.nvim_get_current_buf()
   vim.keymap.set('t', 'jk', '<C-\\><C-n>', {
-    buffer = bufnr,
+    buffer = term_bufnr,
     noremap = true,
     silent = true,
     desc = 'Exit Terminal Mode',
   })
-
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_buf_delete(0, { force = true })
   end, {
-    buffer = bufnr,
+    buffer = term_bufnr,
     noremap = true,
     silent = true,
     desc = 'Close Terminal Window',
   })
-
-  local win_config = M.get_window_config()
-
-  local win_id = vim.api.nvim_open_win(bufnr, true, win_config)
-
-  vim.api.nvim_win_set_option(win_id, 'number', false)
-  vim.api.nvim_win_set_option(win_id, 'relativenumber', false)
-  vim.api.nvim_win_set_option(win_id, 'cursorline', false)
-
   vim.cmd 'startinsert'
 end
 
