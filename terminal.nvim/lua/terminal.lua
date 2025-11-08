@@ -14,7 +14,7 @@ M.get_window_config = function()
     row = row,
     col = col,
     style = 'minimal',
-    border = 'rounded',
+    border = 'none',
   }
 end
 
